@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Staff Dashboard</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<script>
+const currentUser = JSON.parse(localStorage.getItem("currentUser"));
+if(!currentUser || currentUser.role!=="staff") {
+  alert("Unauthorized Access!");
+  window.location.href="login.html";
+}
+</script>
+
+<header>
+<h1>👨‍🏫 Staff Dashboard</h1>
+<button id="themeToggle">Toggle Light/Dark Theme</button>
+</header>
+
+<div class="complaint-section">
+<h2>All Complaints</h2>
+<div id="staffComplaintContainer"></div>
+</div>
+
+<script src="staff.js"></script>
+</body>
+</html>
