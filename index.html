@@ -1,108 +1,48 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>College Complaint System</title>
-  <meta name="description" content="A responsive, interactive web app to raise and view college complaints." />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
-  <style>
-    :root{
-      --bg:#0f1724; --card:#0b1220; --muted:#94a3b8; --accent:#7c3aed; --glass: rgba(255,255,255,0.06);
-      --radius:12px; --maxw:1100px;
-    }
-    *{box-sizing:border-box}
-    html,body{margin:0;padding:0;font-family:Inter, sans-serif;background:var(--bg);color:#e6eef8;}
-    .wrap{max-width:var(--maxw);margin:20px auto;padding:0 16px;}
-    h1,h2,h3{margin:8px 0}
-    .card{background:var(--card);padding:20px;border-radius:var(--radius);margin-bottom:20px;box-shadow:0 4px 20px rgba(0,0,0,0.5);}
-    input,textarea,select,button{font-family:inherit;font-size:14px}
-    input,textarea,select{width:100%;padding:10px;margin:6px 0;border-radius:8px;border:1px solid rgba(255,255,255,0.1);background:transparent;color:#fff;}
-    button{padding:10px 16px;border:none;border-radius:8px;cursor:pointer;color:#fff;background:var(--accent);transition:0.2s}
-    button:hover{opacity:0.85}
-    table{width:100%;border-collapse:collapse}
-    th,td{border:1px solid rgba(255,255,255,0.1);padding:8px;text-align:left}
-    th{background:rgba(124,58,237,0.2)}
-    select{background:var(--card);color:#fff}
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Student Dashboard</title>
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <main class="wrap">
-    <header class="card">
-      <h1>College Complaint Management</h1>
-      <p>Raise complaints and view submissions easily.</p>
-    </header>
 
-    <section class="card">
-      <h2>Submit a Complaint</h2>
-      <form id="complaintForm">
-        <input type="text" id="name" placeholder="Your Name" required>
-        <input type="email" id="email" placeholder="Your Email" required>
-        <select id="type" required>
-          <option value="">Select Complaint Type</option>
-          <option value="Hostel">Hostel</option>
-          <option value="Academics">Academics</option>
-          <option value="Canteen">Canteen</option>
-          <option value="Other">Other</option>
-        </select>
-        <textarea id="description" rows="4" placeholder="Complaint Description" required></textarea>
-        <button type="submit">Submit Complaint</button>
-      </form>
-    </section>
+<header>
+<h1>🎓 Student Complaint Portal</h1>
+<button id="themeToggle">Toggle Light/Dark Theme</button>
+</header>
 
-    <section class="card">
-      <h2>Complaint Dashboard</h2>
-      <label for="filterType">Filter by Type:</label>
-      <select id="filterType">
-        <option value="All">All</option>
-        <option value="Hostel">Hostel</option>
-        <option value="Academics">Academics</option>
-        <option value="Canteen">Canteen</option>
-        <option value="Other">Other</option>
-      </select>
-      <table>
-        <thead>
-          <tr><th>Name</th><th>Email</th><th>Type</th><th>Description</th></tr>
-        </thead>
-        <tbody id="complaintList"></tbody>
-      </table>
-    </section>
-  </main>
+<div class="form-section">
+<h2>Submit Complaint</h2>
+<form id="complaintForm">
+  <input type="text" id="name" value="" readonly placeholder="Your Name">
+  <input type="email" id="email" value="" readonly placeholder="Your Email">
+  <select id="category" required>
+    <option value="">Select Category</option>
+    <option value="Academics">Academics</option>
+    <option value="Hostel">Hostel</option>
+    <option value="Canteen">Canteen</option>
+    <option value="Maintenance">Maintenance</option>
+    <option value="Harassment">Harassment</option>
+    <option value="Other">Other</option>
+  </select>
+  <select id="priority" required>
+    <option value="">Select Priority</option>
+    <option value="Low">Low</option>
+    <option value="Medium">Medium</option>
+    <option value="Urgent">Urgent</option>
+  </select>
+  <textarea id="description" rows="4" placeholder="Complaint Description" required></textarea>
+  <button type="submit">Submit Complaint</button>
+</form>
+</div>
 
-  <script>
-    const form = document.getElementById('complaintForm');
-    const list = document.getElementById('complaintList');
-    const filter = document.getElementById('filterType');
+<div class="complaint-section">
+<h2>My Complaints</h2>
+<div id="complaintContainer"></div>
+</div>
 
-    let complaints = JSON.parse(localStorage.getItem('complaints')||'[]');
-
-    function renderComplaints(filterType='All'){
-      list.innerHTML='';
-      complaints.filter(c=>filterType==='All'||c.type===filterType).forEach(c=>{
-        const row = document.createElement('tr');
-        row.innerHTML=`<td>${c.name}</td><td>${c.email}</td><td>${c.type}</td><td>${c.description}</td>`;
-        list.appendChild(row);
-      });
-    }
-
-    form.addEventListener('submit', e=>{
-      e.preventDefault();
-      const newComplaint = {
-        name:document.getElementById('name').value.trim(),
-        email:document.getElementById('email').value.trim(),
-        type:document.getElementById('type').value,
-        description:document.getElementById('description').value.trim()
-      };
-      complaints.push(newComplaint);
-      localStorage.setItem('complaints',JSON.stringify(complaints));
-      renderComplaints(filter.value);
-      form.reset();
-    });
-
-    filter.addEventListener('change', ()=>renderComplaints(filter.value));
-
-    renderComplaints();
-  </script>
+<script src="script.js"></script>
 </body>
 </html>
