@@ -1,60 +1,55 @@
-const adminContainer=document.getElementById("adminComplaintContainer");
-const chartCanvas=document.getElementById("chart");
-const themeToggle=document.getElementById("themeToggle");
-let complaints=JSON.parse(localStorage.getItem("complaints")||"[]");
+document.addEventListener("DOMContentLoaded", function() {
+    const complaintContainer = document.getElementById("complaintContainer");
+    const themeToggle = document.getElementById("themeToggle");
 
-themeToggle.addEventListener("click",()=>{document.body.classList.toggle("dark-theme");});
+    const currentUser = JSON.parse(localStorage.getItem("currentUser"));
+    if(!currentUser || currentUser.role !== "admin") {
+        alert("Unauthorized Access!");
+        window.location.href = "login.html";
+        return;
+    }
 
-function renderAdmin(){
-  adminContainer.innerHTML="";
-  complaints.forEach(c=>{
-    const div=document.createElement("div");
-    div.className="complaint-card";
-    div.innerHTML=`
-      <p><strong>Name:</strong> ${c.name}</p>
-      <p><strong>Category:</strong> ${c.category}</p>
-      <p><strong>Priority:</strong> ${c.priority}</p>
-      <p><strong>Description:</strong> ${c.description}</p>
-      <p><strong>Status:</strong> <span id="status-${c.id}">${c.status}</span></p>
-      <button onclick="updateStatus(${c.id},'In Progress')">Mark In Progress</button>
-      <button onclick="updateStatus(${c.id},'Resolved')">Mark Resolved</button>
-    `;
-    if(c.priority==="Urgent") div.style.border="2px solid red";
-    adminContainer.appendChild(div);
-  });
-  renderChart();
-}
+    let complaints = JSON.parse(localStorage.getItem("complaints") || "[]");
 
-function updateStatus(id,status){
-  const index=complaints.findIndex(c=>c.id===id);
-  if(index!==-1){
-    complaints[index].status=status;
-    localStorage.setItem("complaints",JSON.stringify(complaints));
-    alert(`Notification: ${complaints[index].name}, your complaint is now ${status}`);
-    renderAdmin();
-  }
-}
+    if(localStorage.getItem("theme") === "dark") {
+        document.body.classList.add("dark-theme");
+    }
 
-function renderChart(){
-  const categories={};
-  complaints.forEach(c=>{
-    categories[c.category]=categories[c.category]?categories[c.category]+1:1;
-  });
-  if(window.myChart) window.myChart.destroy();
-  const ctx=chartCanvas.getContext("2d");
-  window.myChart=new Chart(ctx,{
-    type:"bar",
-    data:{
-      labels:Object.keys(categories),
-      datasets:[{
-        label:"# of Complaints",
-        data:Object.values(categories),
-        backgroundColor:"rgba(124,58,237,0.7)"
-      }]
-    },
-    options:{responsive:true}
-  });
-}
+    themeToggle.addEventListener("click", () => {
+        document.body.classList.toggle("dark-theme");
+        localStorage.setItem("theme", document.body.classList.contains("dark-theme") ? "dark" : "light");
+    });
 
-renderAdmin();
-setInterval(renderAdmin,1000);
+    function renderComplaints() {
+        complaints = JSON.parse(localStorage.getItem("complaints") || "[]");
+        complaintContainer.innerHTML = "";
+
+        complaints.forEach(c => {
+            const div = document.createElement("div");
+            div.className = "complaint-card";
+            div.innerHTML = `
+                <p><strong>Name:</strong> ${c.name}</p>
+                <p><strong>Email:</strong> ${c.email}</p>
+                <p><strong>Category:</strong> ${c.category}</p>
+                <p><strong>Priority:</strong> ${c.priority}</p>
+                <p><strong>Description:</strong> ${c.description}</p>
+                <p><strong>Status:</strong> <span id="status-${c.id}">${c.status}</span></p>
+                <button onclick="updateStatus(${c.id}, 'In Progress')">Mark In Progress</button>
+                <button onclick="updateStatus(${c.id}, 'Resolved')">Mark Resolved</button>
+            `;
+            complaintContainer.prepend(div);
+        });
+    }
+
+    window.updateStatus = function(id, status) {
+        const index = complaints.findIndex(c => c.id === id);
+        if(index !== -1) {
+            complaints[index].status = status;
+            localStorage.setItem("complaints", JSON.stringify(complaints));
+            renderComplaints();
+        }
+    }
+
+    setInterval(renderComplaints, 1000);
+    renderComplaints();
+});
